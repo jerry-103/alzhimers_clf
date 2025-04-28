@@ -1,16 +1,20 @@
+### Main file
+#Imports
 from loaders import csv_to_df
 from clean import clean, split_data
 from train import train_pipe
 from eval import evaluate
 
+#list of cols to drop while cleaning
 cols_to_drop = ['PatientID', 'DoctorInCharge']
+#list of categorical features for one-hot encoding
 categorical_feats = ['Gender', 'Ethnicity', 'EducationLevel', 'Smoking',
                      'FamilyHistoryAlzheimers', 'CardiovascularDisease',
                      'Diabetes', 'Depression', 'HeadInjury', 'Hypertension',
                      'MemoryComplaints', 'BehavioralProblems', 'Confusion',
                      'Disorientation', 'PersonalityChanges', 'DifficultyCompletingTasks',
                      'Forgetfulness']
-
+#list of numerical features for scaling
 numerical_feats = ['Age', 'BMI', 'AlcoholConsumption', 'PhysicalActivity',
                    'DietQuality', 'SleepQuality', 'SystolicBP', 'DiastolicBP',
                    'CholesterolTotal', 'CholesterolLDL', 'CholesterolHDL',
