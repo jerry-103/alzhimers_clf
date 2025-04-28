@@ -10,7 +10,7 @@ from sklearn.naive_bayes import BernoulliNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV
 
-def train_pipe(x_train, y_train, num_feats, cat_feats, random_seed):
+def train_pipe(x_train, y_train, num_feats, cat_feats, random_seed = 42):
     """
     :param x_train: X_train dataframe
     :param y_train: y_train dataframe
@@ -24,7 +24,7 @@ def train_pipe(x_train, y_train, num_feats, cat_feats, random_seed):
                                  ("scalar", StandardScaler())])
 
     #creating categorical transformer
-    cat_trans = Pipeline(steps= [("imputer", SimpleImputer(strategy= "constant", fill_value= "missing")),
+    cat_trans = Pipeline(steps= [("imputer", SimpleImputer(strategy= "constant", fill_value= 0)),
                                  ("onehot", OneHotEncoder(handle_unknown= "ignore"))])
 
     #Applying both transformers to data w/ columns_transformer
@@ -76,4 +76,6 @@ def train_pipe(x_train, y_train, num_feats, cat_feats, random_seed):
     print(lr_grid_search.best_params_)
 
     return nb_best, lr_best
+
+
 

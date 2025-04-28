@@ -10,7 +10,7 @@ def clean(df, drop_cols):
     cleaned_df = df.drop(labels = drop_cols, axis = 1)
     return cleaned_df
 
-def split_data(df, target_var, test_size, random_seed):
+def split_data(df, target_var, test_size, random_seed = 42):
     """
     :param df: Dataframe to be split
     :param target_var: col_name of y_var to be predicted
