@@ -9,6 +9,7 @@ from sklearn.naive_bayes import BernoulliNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 
 def train_pipe(x_train, y_train, num_feats, cat_feats, random_seed = 42):
@@ -18,7 +19,7 @@ def train_pipe(x_train, y_train, num_feats, cat_feats, random_seed = 42):
     :param num_feats: list of numerical features
     :param cat_feats: list of categorical features
     :param random_seed: random seed
-    :return: best performing NaiveBayes, LogisticRegression, Decision Tree classifiers
+    :return: best performing NaiveBayes, LogisticRegression, Decision Tree, and Random Forest classifiers
     """
     #creating numeric transformer
     num_trans = Pipeline(steps= [("imputer", SimpleImputer(strategy= 'mean')),
@@ -69,9 +70,23 @@ def train_pipe(x_train, y_train, num_feats, cat_feats, random_seed = 42):
         "clf__max_features" : ['sqrt', 'log2', None]
     }
 
+    # Creating Random Forest Pipeline & Gridsearch params
+    rf_pipe = Pipeline(steps = [
+        ("preprocessor", preprocessor),
+        ("clf", RandomForestClassifier(random_state= random_seed))
+    ])
+    rf_params = {
+        "clf__n_estimators" : [50, 100, 200],
+        "clf__max_depth" : [3, 5, 9, None],
+        "clf__min_samples_split" : [2,5,10],
+        "clf__min_samples_leaf" : [1,4,6],
+        "clf__max_features" : ['sqrt', 'log2', None]
+    }
+
+
     #Using Grid search to find best params for NB clf
     nb_grid_search = GridSearchCV(
-        nb_pipe, nb_params, n_jobs= -1
+        nb_pipe, nb_params, n_jobs= -1, scoring= "f1"
     )
     nb_grid_search.fit(x_train, y_train)
     #getting best performing estimator
@@ -81,7 +96,7 @@ def train_pipe(x_train, y_train, num_feats, cat_feats, random_seed = 42):
 
     #Gridsearch to find best params for LogReg clf
     lr_grid_search = GridSearchCV(
-        lr_pipe, lr_params, n_jobs= -1
+        lr_pipe, lr_params, n_jobs= -1, scoring= "f1"
     )
     lr_grid_search.fit(x_train, y_train)
     #getting best performing LR estimator
@@ -89,16 +104,25 @@ def train_pipe(x_train, y_train, num_feats, cat_feats, random_seed = 42):
     print("Best Logistic Regression parameters")
     print(lr_grid_search.best_params_)
 
-    # Gridsearch to find best params for DecTree clf
+    #Gridsearch to find best params for DecTree clf
     dt_grid_search = GridSearchCV(
-        dt_pipe, dt_params, n_jobs= -1
+        dt_pipe, dt_params, n_jobs= -1, scoring= "f1"
     )
     dt_grid_search.fit(x_train, y_train)
     dt_best = dt_grid_search.best_estimator_
     print("Best Decision Tree Parameters")
     print(dt_grid_search.best_params_)
 
-    return nb_best, lr_best, dt_best
+    #Gridsearch to find best params for Random Forest clf
+    rf_grid_search = GridSearchCV(
+        rf_pipe, rf_params, n_jobs= -1, scoring= "f1"
+    )
+    rf_grid_search.fit(x_train, y_train)
+    rf_best = rf_grid_search.best_estimator_
+    print("Best Random Forest Parameters")
+    print(dt_grid_search.best_params_)
+
+    return nb_best, lr_best, dt_best, rf_best
 
 
 
